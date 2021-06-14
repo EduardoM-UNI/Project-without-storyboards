@@ -8,80 +8,74 @@
 import UIKit
 import PureLayout
 
-class ViewController: UIViewController {
-
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    
+    lazy var profileView: UIView = {
+        return ProfileView(tableView: self.tableView)
+    }()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationController?.navigationBar.isTranslucent = false
+        self.title = "Eduardo Monroy"
         // Do any additional setup after loading the view.
         self.view.backgroundColor = .white
-        addSubviews()
-        setupConstraints()
+        
+        self.view.addSubview(self.profileView)
+        self.profileView.autoPinEdgesToSuperviewEdges()
+        self.view.layoutIfNeeded()
+        
+        DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        
     }
     
-        var avatar: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "Foto_Edu_Traje"))
-        imageView.autoSetDimensions(to: CGSize(width: 128.0, height: 128.0))
-        imageView.contentMode = .scaleAspectFill
-        imageView.layer.borderWidth = 3.0
-        imageView.layer.borderColor = UIColor.lightGray.cgColor
-        imageView.layer.cornerRadius = 64.0
-        imageView.clipsToBounds = true
+    let profileInfoCellReuseIdentifier = "profileInfoCellReuseIdentifier"
+    lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        
+        tableView.register(ProfileInfoTableViewCell.self, forCellReuseIdentifier: profileInfoCellReuseIdentifier)
+       
+        tableView.estimatedRowHeight = 64
+        tableView.rowHeight = UITableView.automaticDimension
+        return tableView
+    }()
+    
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 4
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: profileInfoCellReuseIdentifier, for: indexPath) as! ProfileInfoTableViewCell
+          
+        
+        
+        switch indexPath.row {
+            case 0:
+                cell.titleLabel.text = "Phone Number"
+                cell.descriptionLabel.text = "+34661573380"
+            case 1:
+                cell.titleLabel.text = "Email"
+                cell.descriptionLabel.text = "edu.wap2@gmail.com"
+            case 2:
+                cell.titleLabel.text = "LinkedIn"
+                cell.descriptionLabel.text = "www.linkedin.com/Eduardo-Monroy"
+        case 3:
+            cell.titleLabel.text = "Address"
+            cell.descriptionLabel.text = "C/Santiago de Compostela Nº 28BIS\n08204, Sabadell (BARCELONA)"
+            default:
+                break
+            }
             
-        return imageView
-    }()
-
-        var upperView: UIView = {
-        let view = UIView()
-        view.autoSetDimension(.height, toSize: 128)
-        view.backgroundColor = .gray
-        return view
-    }()
-    
-    lazy var segmentedControl: UISegmentedControl = {
-        let control = UISegmentedControl(items: ["Personal", "Social", "Resumè"])
-        control.autoSetDimension(.height, toSize: 32.0)
-        control.selectedSegmentIndex = 0
-        control.layer.borderColor = UIColor.gray.cgColor
-        control.tintColor = .gray
-        return control
-    }()
-    
-    lazy var editButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Edit", for: .normal)
-        button.setTitleColor(.gray, for: .normal)
-        button.layer.cornerRadius = 4.0
-        button.layer.borderColor = UIColor.gray.cgColor
-        button.layer.borderWidth = 1.0
-        button.tintColor = .gray
-        button.backgroundColor = .clear
-        button.autoSetDimension(.width, toSize: 96.0)
-        button.autoSetDimension(.height, toSize: 32.0)
-        return button
-    }()
-    
-    func addSubviews() {
-      
-        self.view.addSubview(upperView)
-        self.view.addSubview(avatar)
-        self.view.addSubview(segmentedControl)
-        
-            segmentedControl.autoPinEdge(toSuperviewEdge: .left, withInset: 8.0)
-            segmentedControl.autoPinEdge(toSuperviewEdge: .right, withInset: 8.0)
-            segmentedControl.autoPinEdge(.top, to: .bottom, of: avatar, withOffset: 16.0)
-        
-        self.view.addSubview(editButton)
-        
-        editButton.autoPinEdge(.top, to: .bottom, of: upperView, withOffset: 16.0)
-        editButton.autoPinEdge(toSuperviewEdge: .right, withInset: 8.0)
+            return cell
     }
-        
-        func setupConstraints() {
-            avatar.autoAlignAxis(toSuperviewAxis: .vertical)
-            avatar.autoPinEdge(toSuperviewEdge: .top, withInset: 64.0)
-            upperView.autoPinEdge(toSuperviewEdge: .left)
-            upperView.autoPinEdge(toSuperviewEdge: .right)
-            upperView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        }
+    
 
 }
